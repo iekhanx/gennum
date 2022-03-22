@@ -1,0 +1,20 @@
+Create an Pixmap using
+
+Pixmap XCreatePixmap(display, d, width, height, depth)
+      Display *display; // The display
+      Drawable d;       // The Window for which to set the background
+Create a Graphics Context for the Pixmap
+
+GC XCreateGC(display, d, valuemask, values)
+Draw the XImage to the Pixmap
+
+XPutImage(display, pixmap, gc, image, src_x, src_y, dest_x, dest_y, width, height)
+        Drawable d; // The Pixmap
+        XImage *image; // your XImage
+Finally set the Pixmap as the window's background
+
+XSetWindowBackgroundPixmap(display, w, background_pixmap)
+      Display *display;
+      Window w;
+      Pixmap background_pixmap;
+Then free all resources no longer needed.

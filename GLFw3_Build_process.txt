@@ -1,0 +1,34 @@
+				StackOverflow
+				=============
+Web Page Link address:
+https://stackoverflow.com/questions/17768008/how-to-build-install-glfw-3-and-use-it-in-a-linux-project
+=================================================================
+g++ main.o -o main.exec -lGL -lGLU -lglfw3 -lX11 -lXxf86vm -lXrandr -lpthread -lXi
+
+
+Now compile using g++ -std=c++11 -c main.cpp - not sure if c++11 is required but I used nullptr so, I needed it... You may need to upgrade your gcc to version 4.7, or the upcoming version 4.8... Info on that here.
+
+Then fix your errors if you typed the program by hand or tried to be "too clever" and something didn't work... Then link it using this monster! g++ main.o -o main.exec -lGL -lGLU -lglfw3 -lX11 -lXxf86vm -lXrandr -lpthread -lXi So you see, in the "install build dependencies" part, you may also want to check you have the GL, GLU, X11 Xxf86vm (whatever that is) Xrandr posix-thread and Xi (whatever that is) development libraries installed also. Maybe update your graphics drivers too, I think GLFW 3 may require OpenGL version 3 or higher? Perhaps someone can confirm that? You may also need to add the linker options -ldl -lXinerama -lXcursor to get it to work correctly if you are getting undefined references to dlclose (credit to @user2255242).
+
+
+pkg-config --static --libs glfw3
+shows me that
+
+-L/usr/local/lib -lglfw3 -lrt -lXrandr -lXinerama -lXi -lXcursor -lGL -lm -ldl -lXrender -ldrm -lXdamage -lX11-xcb -lxcb-glx -lxcb-dri2 -lxcb-dri3 -lxcb-present -lxcb-sync -lxshmfence -lXxf86vm -lXfixes -lXext -lX11 -lpthread -lxcb -lXau -lXdmcp  
+
+
+Note that you do not need that many -ls if you install glfw with the BUILD_SHARED_LIBS option. (You can enable this option by running ccmake first).
+
+This way sudo make install will install the shared library in /usr/local/lib/libglfw.so. You can then compile the example file with a simple:
+
+g++ main.cpp -L /usr/local/lib/ -lglfw
+Then do not forget to add /usr/local/lib/ to the search path for shared libraries before running your program. This can be done using:
+
+export LD_LIBRARY_PATH=/usr/local/lib:${LD_LIBRARY_PATH}
+And you can put that in your ~/.bashrc so you don't have to type it all the time.
+
+this solved it to me:
+
+sudo apt-get update
+sudo apt-get install libglfw3
+sudo apt-get install libglfw3-dev

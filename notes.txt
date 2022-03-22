@@ -1,0 +1,4 @@
+using ls with option like "ls -1 -Q *.hpp" will sort out include issue
+using vim :%s/"/"include\/ to include path n .hpp file
+adding further director ":%s/"/"..\/" so it look "../include/Color.hpp"
+

@@ -1,0 +1,27 @@
+n Linux, how do I check if a library is installed or not? (from the command line of course).
+
+In my specific case now, I want to check whether libjpeg is installed.
+
+
+￼
+To do this in a distro-independent* fashion you can use ldconfig with grep, like this:
+
+ldconfig -p | grep libjpeg
+If libjpeg is not installed, there will be no output. If it is installed, you will get a line for each version available.
+
+Replace libjpeg by any library you want, and you have a generic, distro-independent* way of checking for library availability.
+
+If for some reason the path to ldconfig is not set, you can try to invoke it using its full path, usually /sbin/ldconfig.
+
+
+pkg-config --list-all | less
+
+On Redhat based systems, one can use pkg-config to verify if a library is installed or not. Many rpm binaries actually make the same checks before proceeding with installation, so we can reasonably rely on its veracity.
+
+pkg-config --cflags jpeg
+
+pkg-config --libs jpeg
+
+pkg-config --cflags "jpeg >= 1.0.0" # for version check
+pkg-config  --modversion jpeg | awk -F. '{ printf "0x%02X%02X%02X\n",$1,$2,$3 }' #version check
+

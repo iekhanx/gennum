@@ -1,0 +1,43 @@
+I put together a Q&D recursing bash script based on the 'readelf -d' suggestion on a RHEL 6 distro.
+
+It is very basic and will test every dependency every time even if it might have been tested before (i.e very verbose). Output is very basic too.
+
+redirect the output to a file and grep for 'found' or 'failed'
+
+Use and modify, at your own risk of course, as you wish.
+
+#! /bin/bash
+
+recurse ()
+# Param 1 is the nuumber of spaces that the output will be prepended with
+# Param 2 full path to library
+{
+#Use 'readelf -d' to find dependencies
+dependencies=$(readelf -d ${2} | grep NEEDED | awk '{ print $5 }' | tr -d '[]')
+for d in $dependencies; do
+   echo "${1}${d}"
+   nm=${d##*/}
+   #libstdc++ hack for the '+'-s
+   nm1=${nm//"+"/"\+"}
+   # /lib /lib64 /usr/lib and /usr/lib are searched
+   children=$(locate ${d} | grep -E "(^/(lib|lib64|usr/lib|usr/lib64)/${nm1})")
+   rc=$?
+   #at least locate... didn't fail
+   if [ ${rc} == "0" ] ; then
+      #we have at least one dependency
+      if [ ${#children[@]} -gt 0 ]; then
+         #check the dependeny's dependencies
+         for c in $children; do
+          recurse "  ${1}" ${c}
+         done
+      else
+         echo "${1}no children found"
+      fi
+   else
+      echo "${1}locate failed for ${d}"
+   fi
+done
+}
+# Q&D -- recurse needs 2 params could/should be supplied from cmdline
+recurse "" !!full path to library you want to investigate!!
+redirect the output to a file and grep for 'fo

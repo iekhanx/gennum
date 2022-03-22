@@ -1,0 +1,33 @@
+The Edison SDK actually came with FLAC already present, but an older version. Compiling my own version into a usr/local/lib location within my SDK did not update the pkgConfig, since it was placing the pkgconfig into /usr/local/lib/pkgconfig.
+
+The easiest solution is to add the path, separated by a : into the PKG_CONFIG_PATH variable in the environment setup script. example, line 4 becomes:
+export PKG_CONFIG_PATH=$SDKTARGETSYSROOT/usr/lib/pkgconfig:$SDKTARGETSYSROOT/usr/local/lib/pkgconfig
+
+you could also pass the path during the ./config step, but I think adding it to the variable is better long term solution.
+
+
+
+Fixed by adding a source that has a newer version... sudo add-apt-repository ppa:jonathonf/ffmpeg-4 ...And using @logan command... ffmpeg -i input.flac -c:v copy -c:a alac output.m4a
+
+
+
+
+elseif(SFML_OS_MACOSX)
+    set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "${PROJECT_SOURCE_DIR}/extlibs/libs-osx/Frameworks")
+
+# minimp3 sources
+target_include_directories(sfml-audio SYSTEM PRIVATE "${PROJECT_SOURCE_DIR}/extlibs/headers/minimp3")
+
+You are compiling your object files with a 64-bit compiler driver, w64-mingw32-gcc, and with -m64 you are explicitly directing it to generate 64-bit code (unnecessarily, as that is its default). But you are linking with a 32-bit linker that does not understand 64-bit object files.
+
+This is happening because in your makefile you are, unusually, invoking ld explicitly for your incremental solver linkage:
+
+COMMAND_LINK_SOLVER=ld -r -o $@ $^
+rather than delegating linkage to your compiler driver in the usual way, and a 32-bit ld from a different toolchain is being found in your PATH before the 64-bit one belonging to your mingw-w64 toolchain.
+
+To avoid this, invoke the linker via the compiler driver as normal, which for your solver linkage means:
+
+COMMAND_LINK_SOLVER=$(GXX) -Wl,-r -o $@ $^
+You can depend on w64-mingw32-gcc to invoke the ld that was installed with it.
+
+There is no need to correct your main linkage as it is already done the right way.

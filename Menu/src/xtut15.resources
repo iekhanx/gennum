@@ -1,0 +1,19 @@
+#xtut15.exit: Quit
+xtut15.filemenu: File
+xtut15.filemenu: New
+xtut15.filemenu: Open
+xtut15.filemenu: Save
+xtut15.filemenu: Save As
+xtut15.filemenu: Export
+xtut15.filemenu: Import
+xtut15.helpmenu: Mayday
+xtut15.funbutton: Fun
+xtut15*border: slate blue
+xtut15.exit.border: slate blue
+xtut14*font:lucidasans-12
+xtut15*background: cornflower blue
+xtut15.background: darkgreen
+xtut15*foreground: black
+xtut15.exit.background: gray
+xtut15.help2: HELP AND I REALLY MEAN IT
+
